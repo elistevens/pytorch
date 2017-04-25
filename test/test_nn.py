@@ -1035,7 +1035,7 @@ class TestNN(NNTestCase):
             foo = 'foo'
 
         fm_net = FooModule().cuda()
-        dp_net = nn.DataParallel(fm_net)
+        dp_net = nn.DataParallelAttrProxy(fm_net)
 
         self.assertEqual(fm_net.foo, 'foo')
         self.assertEqual(dp_net.foo, 'foo')

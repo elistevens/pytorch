@@ -73,9 +73,19 @@ class DataParallel(Module):
     def gather(self, outputs, output_device):
         return gather(outputs, output_device, dim=self.dim)
 
+class DataParallelAttrProxy(DataParallel):
+    """Subclass of DataParallel that provides attribute proxying to the wrapped
+    module via overriding __getattr__.
+
+    This is useful when the wrapped module has interesting additional
+    attributes, and client code should be agnostic to the presence or absence of
+    DataParallel.
+
+    Otherwise, the behavior is identical to DataParallel.
+    """
     def __getattr__(self, item):
         try:
-            return super(DataParallel, self).__getattr__(item)
+            return super(DataParallelAttrProxy, self).__getattr__(item)
         except AttributeError:
             # Using the simpler `self.modules` goes infinitely recursive
             if '_modules' in self.__dict__:
